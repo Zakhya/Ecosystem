@@ -11,6 +11,23 @@ function App() {
   function toggle(id, columnId, rowId, race) {
     setGrid(prevGrid => {
       const updatedGrid = prevGrid.map(square => {
+       
+  
+        if (square.id === id) {
+          return {
+            ...square,
+            race: type,
+            color: type,
+          };
+        } else {
+          return square; // Keep the square unchanged
+        }
+      });
+
+      // Apply IP updates for cells with the same race after the render
+      return updatedGrid.map(square => {
+
+
         const columnRange = (
           square.columnId === columnId + 1 ||
           square.columnId === columnId - 1 ||
@@ -33,32 +50,12 @@ function App() {
           square.rowId === rowId + 4 ||
           square.rowId === rowId - 4
         );
-  
-        if (square.id === id) {
+
+        if (rowRange && columnRange) {
           return {
             ...square,
-            race: type,
-            color: type,
-            ip: square.ip + 1
-          };
-        } else if (columnRange && rowRange) {
-          return square; // Keep the square unchanged for now
-        } else {
-          return square; // Keep the square unchanged
-        }
-      });
-  
-      // Apply IP updates for cells with the same race after the render
-      return updatedGrid.map(square => {
-        if (square.race === type) {
-          return {
-            ...square,
-            ip: square.ip + 1
-          };
-        } else if(square.race !== type && square.race !== 'none'){
-          return {
-            ...square,
-            ip: square.ip - 1
+            goblinsInRange: type === 'goblin' ? square.goblinsInRange + 1 : square.goblinsInRange,
+            humansInRange: type === 'human' ? square.humansInRange + 1 : square.humansInRange
           };
         } else {
           return square
@@ -67,16 +64,19 @@ function App() {
     });
   }
 
+
   const squareElements = grid.map(cell =>(
     <Box
       color={cell.color}
       key={cell.id}
       id={cell.id}
       on={cell.on}
-      ip={cell.ip}
+      ip={cell.race === 'goblin' ? cell.goblinsInRange - cell.humansInRange : cell.race === 'human' ? cell.humansInRange - cell.goblinsInRange :0 }
       rowId={cell.rowId}
       columnId={cell.columnId}
       race={cell.race}
+      goblinsInRange={cell.goblinsInRange}
+      humansInRange={cell.humansInRange}
       toggle={() => toggle(cell.id, cell.columnId, cell.rowId, cell.race)} />
 
   ))

@@ -6,10 +6,11 @@ function fillArray() {
             rowId: Math.ceil(i / 20),
             id: i,
             columnId: j,
-            ip: 0,
             color: 'transparent',
             race: 'none',
-            isActive: false
+            goblinsInRange: 0,
+            humansInRange: 0,
+            ip: 0
         })
         j > 19 ? j = 1 : j++
     }
