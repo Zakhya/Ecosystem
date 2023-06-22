@@ -10,6 +10,8 @@ function fillArray() {
             race: 'none',
             goblinsInRange: 0,
             humansInRange: 0,
+            dwarvesInRange: 0,
+            entsInRange: 0,
             ip: 0
         })
         j > 19 ? j = 1 : j++
