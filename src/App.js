@@ -6,19 +6,22 @@ import React from 'react'
 
 function App() {
   const [grid, setGrid] = React.useState(boxes)
-  const [type, setType] = React.useState("")
+  const [type, setType] = React.useState("tree")
 
-  function toggle(id, columnId, rowId, race) {
-    if(race !== 'none') return
+  function toggle(id, columnId, rowId, race) {  
+      console.log(id)
+      console.log(columnId)
+      console.log(rowId)
+      console.log(race)
+
+    if(race !== 'none' && race !== '') return
     setGrid(prevGrid => {
       const updatedGrid = prevGrid.map(square => {
        
-  
         if (square.id === id) {
           return {
             ...square,
             race: type,
-            color: type,
           };
         } else {
           return square; // Keep the square unchanged
@@ -55,10 +58,11 @@ function App() {
         if (rowRange && columnRange) {
           return {
             ...square,
-            goblinsInRange: type === 'goblin' ? square.goblinsInRange + 1 : square.goblinsInRange,
-            humansInRange: type === 'human' ? square.humansInRange + 1 : square.humansInRange,
-            dwarvesInRange: type === 'dwarf' ? square.dwarvesInRange + 1 : square.dwarvesInRange,
-            entsInRange: type === 'ent' ? square.entsInRange + 1 : square.entsInRange
+            goblinsInRange: (type === 'goblin' || race === 'goblin') ? square.goblinsInRange + 1 : square.goblinsInRange,
+            humansInRange: (type === 'human' || race === 'human') ? square.humansInRange + 1 : square.humansInRange,
+            dwarvesInRange: (type === 'dwarf' || race === 'dwarf') ? square.dwarvesInRange + 1 : square.dwarvesInRange,
+            entsInRange: (type === 'ent' || race === 'ent') ? square.entsInRange + 1 : square.entsInRange,
+            treesInRange: (type === 'tree' || race === 'tree') ? square.treesInRange + 1 : square.treesInRange
           };
         } else {
           return square
@@ -67,17 +71,12 @@ function App() {
     });
   }
 
-  function calcGoblinIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange){
+  function calcGoblinIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange, treesInRange){
     let ip = 0
     let _goblinsInRange = 0
     for(let i = 0; i < goblinsInRange; i++){
-      if(_goblinsInRange < 8){
         _goblinsInRange++
         ip++
-      } else {
-        _goblinsInRange++
-        ip--
-      }
     }
     let _humansInRange = 0
     for(let i = 0; i < humansInRange; i++){
@@ -91,35 +90,40 @@ function App() {
     }
     let _dwarvesInRange = 0
     for(let i = 0; i < dwarvesInRange; i++){
-      if(_dwarvesInRange < 7){
-        _dwarvesInRange++
-        ip++
-      } else {
         _dwarvesInRange++
         ip--
-      }
     }
-
     let _entsInRange = 0
     for(let i = 0; i < entsInRange; i++){
-     if(_entsInRange < 5){
+     if(_entsInRange < 10){
        _entsInRange++
        ip++
      }
     }
+    let _treesInRange = 0
+    for (let i = 0; i < treesInRange; i++){
+      _treesInRange++
+      ip++ 
+    }
+    console.log(_treesInRange)
     return ip
   }
 
-  function calcHumanIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange){
+  function calcHumanIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange, treesInRange){
     let ip = 0
     let _goblinsInRange = 0
     for(let i = 0; i < goblinsInRange; i++){
+      if(_goblinsInRange < 11){
+        _goblinsInRange++
+        ip++
+      } else{
         _goblinsInRange++
         ip--
+      }
     }
     let _humansInRange = 0
     for(let i = 0; i < humansInRange; i++){
-      if(_humansInRange < 8){
+      if(_humansInRange < 15){
         _humansInRange++
         ip++
       } else {
@@ -140,50 +144,55 @@ function App() {
        ip++
      }
     }
+    let _treesInRange = 0
+    for (let i = 0; i < treesInRange; i++){
+      _treesInRange++
+      ip++ 
+    }
       return ip
     }
 
-  function calcDwarfIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange){
+  function calcDwarfIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange, treesInRange){
     let ip = 0
     let _goblinsInRange = 0
     for(let i = 0; i < goblinsInRange; i++){
-      if(_goblinsInRange < 8){
-        _goblinsInRange++
-        ip++
-      } else {
-        _goblinsInRange++
+      _goblinsInRange++
+      if(_goblinsInRange > 9){
         ip--
       }
     }
     let _humansInRange = 0
     for(let i = 0; i < humansInRange; i++){
-      if(_humansInRange < 4){
-        _humansInRange++
-        ip++
-      } else {
         _humansInRange++
         ip--
-      }
     }
 
     let _dwarvesInRange = 0
     for(let i = 0; i < dwarvesInRange; i++){
+      _dwarvesInRange++
       if(_dwarvesInRange < 11){
-        _dwarvesInRange++
         ip++
       }
     }
 
     let _entsInRange = 0
     for(let i = 0; i < entsInRange; i++){
-     if(_entsInRange > 7)
       _entsInRange++
-        ip--
+     if(_entsInRange < 15){
+       ip++
+     } else {
+      ip--
+     }
+    }
+    let _treesInRange = 0
+    for (let i = 0; i < treesInRange; i++){
+      _treesInRange++
+      ip++ 
     }
     return ip
   }
 
-  function calcEntIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange){
+  function calcEntIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange, treesInRange){
     let ip = 0
     let _goblinsInRange = 0
     for(let i = 0; i < goblinsInRange; i++){
@@ -197,18 +206,16 @@ function App() {
     }
     let _humansInRange = 0
     for(let i = 0; i < humansInRange; i++){
-      if(_humansInRange < 9){
         _humansInRange++
-        ip++
-      } else {
-        _humansInRange++
-        ip--
-      }
+        ip--  
     }
 
     let _dwarvesInRange = 0
     for(let i = 0; i < dwarvesInRange; i++){
-      if(_dwarvesInRange < 0){
+      if(_dwarvesInRange < 10){
+        _dwarvesInRange++
+        ip++
+      } else{
         _dwarvesInRange++
         ip--
       }
@@ -219,9 +226,57 @@ function App() {
         _entsInRange++
         ip++
     }
+    let _treesInRange = 0
+    for (let i = 0; i < treesInRange; i++){
+      _treesInRange++
+      ip++ 
+    }
     return ip
   }
 
+  function calcTreeIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange, treesInRange){
+    let ip = 0
+    let _goblinsInRange = 0
+    for(let i = 0; i < goblinsInRange; i++){
+      if(_goblinsInRange < 3){
+        _goblinsInRange++
+        ip++
+      } else {
+        _goblinsInRange++
+        ip--
+      }
+    }
+    let _humansInRange = 0
+    for(let i = 0; i < humansInRange; i++){
+        _humansInRange++
+        ip--  
+    }
+
+    let _dwarvesInRange = 0
+    for(let i = 0; i < dwarvesInRange; i++){
+      if(_dwarvesInRange < 10){
+        _dwarvesInRange++
+        ip++
+      } else{
+        _dwarvesInRange++
+        ip--
+      }
+    }
+    let _entsInRange = 0
+    for(let i = 0; i < entsInRange; i++){
+      if(entsInRange < 21)
+        _entsInRange++
+        ip++
+    }
+    let _treesInRange = 0
+    for (let i = 0; i < treesInRange; i++){
+      _treesInRange++
+      ip++ 
+    }
+    return ip
+  }
+
+  
 
   const squareElements = grid.map(cell =>(
     <Box
@@ -229,10 +284,11 @@ function App() {
       key={cell.id}
       id={cell.id}
       on={cell.on}
-      ip={cell.race === 'goblin' ? calcGoblinIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange) 
-      : cell.race === 'human' ? calcHumanIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange) 
-      : cell.race === 'dwarf' ? calcDwarfIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange)
-      : cell.race === 'ent' ? calcEntIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange):0 }
+      ip={cell.race === 'goblin' ? calcGoblinIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange) 
+      : cell.race === 'human' ? calcHumanIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange) 
+      : cell.race === 'dwarf' ? calcDwarfIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange)
+      : cell.race === 'ent' ? calcEntIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange)
+      : cell.race === 'tree' ? calcTreeIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange) : 0}
       rowId={cell.rowId}
       columnId={cell.columnId}
       race={cell.race}
@@ -240,6 +296,7 @@ function App() {
       humansInRange={cell.humansInRange}
       dwarvesInRange={cell.dwarvesInRange}
       entsInRange={cell.entsInRange}
+      treesInRange={cell.treesInRange}
       toggle={() => toggle(cell.id, cell.columnId, cell.rowId, cell.race)} />
 
   ))
@@ -249,7 +306,24 @@ function App() {
     console.log(event.target.value)
     setType(value)
   }
-
+  
+  function handleToggle(){
+    let idList = []
+    for(let i = 0; i <= 90; i++){
+      let [id, columnNumber, rowNumber] = generateRandomIDs()
+      if(!idList.includes(id)){
+        toggle(id,columnNumber,rowNumber,'')
+      } else {
+        i--
+      }
+    }
+    function generateRandomIDs(){
+      let rowNumber = Math.ceil(Math.random() * 20)
+      let columnNumber = Math.ceil(Math.random() * 20)
+      let id = columnNumber + ((rowNumber * 20) - 20)
+      return [id, columnNumber, rowNumber]
+    }
+}
 
   return (
     <div className="App">
@@ -303,6 +377,7 @@ function App() {
       <div className="grid-container">
           {squareElements}
       </div>
+      <button onClick={handleToggle}>start</button>
     </div>
   );
 }
