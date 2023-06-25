@@ -1,0 +1,92 @@
+<fieldset>
+          <legend>Current Type</legend>
+            <br />
+
+            <input
+              type="radio"
+              id="human" 
+              value="human"
+              onChange={changeType}
+              checked={type === "human"}/>
+            <label>Human</label>
+
+            <input
+              type="radio"
+              id="goblin" 
+              value="goblin" 
+              onChange={changeType}
+              checked={type === "goblin"}/>
+            <label>Goblin</label>
+
+            <input
+              type="radio"
+              id="dwarf" 
+              value="dwarf" 
+              onChange={changeType}
+              checked={type === "dwarf"}/>
+            <label>Dwarf</label>
+
+            <input
+              type="radio"
+              id="ent" 
+              value="ent" 
+              onChange={changeType}
+              checked={type === "ent"}/>
+            <label>Ent</label>
+            
+            <input
+              type="radio"
+              id="transparent" 
+              value="transparent" 
+              onChange={changeType}
+              checked={type === "transparent"}/>
+            <label>None</label>
+        </fieldset>
+
+
+
+        function useEffectFunction(){
+            console.log('use effect ran')
+            let selectedType
+            for(let i = 1; i < typeArray.length; i++){
+              if(typeArray[i] === 'goblin') takeGoblinTurn()
+              if(typeArray[i] === 'human') takeGoblinTurn()
+              if(typeArray[i] === 'ent') takeGoblinTurn()
+              if(typeArray[i] === 'dwarf') takeGoblinTurn()
+            }
+          }
+          React.useEffect(() => {
+            // Perform some initialization or side effect
+            useEffectFunction()
+            
+            return () => {
+              // Cleanup function
+              // Perform cleanup when the component is unmounted
+              // or before a new effect is run
+            };
+          }, [grid]);
+          
+
+
+          return playerTurnGrid.map(square => {
+            let isChanged = false
+            for(let i = 0; i < 1; i++){
+        
+            const randomId = Math.ceil(Math.random() * 400)
+    
+            const updatedGrid = prevGrid.map(square => {
+            if (square.race === 'none' && square.id === randomId) {
+              isChanged = true
+              return {
+                ...square,
+                race: 'goblin',
+            }
+            } else {
+              return square; // Keep the square unchanged
+            }
+          
+        })
+        if(isChanged === false) i--
+      }
+          })
+    

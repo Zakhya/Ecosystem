@@ -7,13 +7,13 @@ import React from 'react'
 function App() {
   const [grid, setGrid] = React.useState(boxes)
   const [type, setType] = React.useState("tree")
+  const [takingTurns, setTakingTurns] = React.useState(false)
+  const [raceSelected, setRaceSelected] = React.useState('none')
 
-  function toggle(id, columnId, rowId, race) {  
-      console.log(id)
-      console.log(columnId)
-      console.log(rowId)
-      console.log(race)
+  const typeArray = ['human', 'goblin', 'dwarf', 'ent']
+  let playerRace = 'human'
 
+  function startGame(id, columnId, rowId, race){
     if(race !== 'none' && race !== '') return
     setGrid(prevGrid => {
       const updatedGrid = prevGrid.map(square => {
@@ -27,8 +27,6 @@ function App() {
           return square; // Keep the square unchanged
         }
       });
-
-      // Apply IP updates for cells with the same race after the render
       return updatedGrid.map(square => {
 
 
@@ -68,8 +66,148 @@ function App() {
           return square
         }
       });
-    });
+    })
+    setType('none')
   }
+
+
+  function toggle(id, columnId, rowId, race) {  
+      console.log(id)
+      console.log(columnId)
+      console.log(rowId)
+      console.log(race)
+
+    if(race !== 'none' && race !== '') return
+    setGrid(prevGrid => {
+      const updatedGrid = prevGrid.map(square => {
+       
+        if (square.id === id) {
+          return {
+            ...square,
+            race: type,
+          };
+        } else {
+          return square; // Keep the square unchanged
+        }
+      });
+
+      // Apply IP updates for cells with the same race after the render
+      const playerUpdatedGrid =  updatedGrid.map(square => {
+
+
+        const columnRange = (
+          square.columnId === columnId + 1 ||
+          square.columnId === columnId - 1 ||
+          square.columnId === columnId ||
+          square.columnId === columnId + 2 ||
+          square.columnId === columnId - 2 ||
+          square.columnId === columnId + 3 ||
+          square.columnId === columnId - 3 ||
+          square.columnId === columnId + 4 ||
+          square.columnId === columnId - 4
+        );
+        const rowRange = (
+          square.rowId === rowId + 1 ||
+          square.rowId === rowId - 1 ||
+          square.rowId === rowId ||
+          square.rowId === rowId + 2 ||
+          square.rowId === rowId - 2 ||
+          square.rowId === rowId + 3 ||
+          square.rowId === rowId - 3 ||
+          square.rowId === rowId + 4 ||
+          square.rowId === rowId - 4
+        );
+
+        if (rowRange && columnRange) {
+          return {
+            ...square,
+            goblinsInRange: (type === 'goblin' || race === 'goblin') ? square.goblinsInRange + 1 : square.goblinsInRange,
+            humansInRange: (type === 'human' || race === 'human') ? square.humansInRange + 1 : square.humansInRange,
+            dwarvesInRange: (type === 'dwarf' || race === 'dwarf') ? square.dwarvesInRange + 1 : square.dwarvesInRange,
+            entsInRange: (type === 'ent' || race === 'ent') ? square.entsInRange + 1 : square.entsInRange,
+            treesInRange: (type === 'tree' || race === 'tree') ? square.treesInRange + 1 : square.treesInRange
+          };
+        } else {
+          return square
+        }
+
+
+      })
+      let goblinTurnGrid
+      for(let i = 0; i < 1; i++){
+        let unchanged = true
+        let rowNumber = Math.ceil(Math.random() * 20)
+        let columnNumber = Math.ceil(Math.random() * 20)
+        let id = columnNumber + ((rowNumber * 20) - 20)
+        console.log("finding gob spot")
+
+        goblinTurnGrid = playerUpdatedGrid.map(square =>{
+          if (square.id === id && square.race === 'none') {
+            unchanged = false
+            return {
+              ...square,
+              race: 'goblin',
+            };
+          } else {
+            return square; // Keep the square unchanged
+
+          }
+        })
+        console.log(id)
+        if(unchanged) i--
+      }
+
+      let dwarfTurnGrid
+      for(let i = 0; i < 1; i++){
+        let unchanged = true
+        let rowNumber = Math.ceil(Math.random() * 20)
+        let columnNumber = Math.ceil(Math.random() * 20)
+        let id = columnNumber + ((rowNumber * 20) - 20)
+        console.log("finding dwarf spot")
+
+        dwarfTurnGrid = goblinTurnGrid.map(square =>{
+          if (square.id === id && square.race === 'none') {
+            unchanged = false
+            return {
+              ...square,
+              race: 'dwarf',
+            };
+          } else {
+            return square; // Keep the square unchanged
+
+          }
+        })
+        console.log(id)
+        if(unchanged) i--
+      }
+
+      let entTurnGrid
+      for(let i = 0; i < 1; i++){
+        let unchanged = true
+        let rowNumber = Math.ceil(Math.random() * 20)
+        let columnNumber = Math.ceil(Math.random() * 20)
+        let id = columnNumber + ((rowNumber * 20) - 20)
+        console.log("finding ent spot")
+
+        entTurnGrid = dwarfTurnGrid.map(square =>{
+          if (square.id === id && square.race === 'none') {
+            unchanged = false
+            return {
+              ...square,
+              race: 'ent',
+            };
+          } else {
+            return square; // Keep the square unchanged
+
+          }
+        })
+        console.log(id)
+        if(unchanged) i--
+      }
+      return entTurnGrid
+    })
+  }
+
 
   function calcGoblinIp(goblinsInRange, humansInRange, dwarvesInRange, entsInRange, treesInRange){
     let ip = 0
@@ -276,7 +414,7 @@ function App() {
     return ip
   }
 
-  
+
 
   const squareElements = grid.map(cell =>(
     <Box
@@ -301,18 +439,20 @@ function App() {
 
   ))
 
+  /*
   function changeType(event){
     const {value} = event.target
     console.log(event.target.value)
     setType(value)
   }
-  
+  */
+
   function handleToggle(){
     let idList = []
     for(let i = 0; i <= 90; i++){
       let [id, columnNumber, rowNumber] = generateRandomIDs()
       if(!idList.includes(id)){
-        toggle(id,columnNumber,rowNumber,'')
+        startGame(id,columnNumber,rowNumber,'')
       } else {
         i--
       }
@@ -323,61 +463,63 @@ function App() {
       let id = columnNumber + ((rowNumber * 20) - 20)
       return [id, columnNumber, rowNumber]
     }
+  }
+  
+  
+  function changeType(type){
+    setType(type)
+  console.log(type)
 }
 
   return (
     <div className="App">
       <header>
-        <h2 className="title">Playing Field</h2>  
-        <fieldset>
-          <legend>Current Type</legend>
-            <br />
+        <h2 className="title">Playing Field</h2>
+        {type !== "tree" && <div>
 
-            <input
-              type="radio"
-              id="human" 
-              value="human"
-              onChange={changeType}
-              checked={type === "human"}/>
-            <label>Human</label>
+        {type === 'none' || type === 'human' ? (
+          <button
+            onClick={() => changeType('human')}
+            className={'human'}
+          >
+            {type === 'none' ? 'Human' : <h2 className='human'>Playing as: The Humans</h2>}
+          </button>
+        ) : null}
 
-            <input
-              type="radio"
-              id="goblin" 
-              value="goblin" 
-              onChange={changeType}
-              checked={type === "goblin"}/>
-            <label>Goblin</label>
+        {type === 'none' || type === 'goblin' ? (
+          <button
+            onClick={() => changeType('goblin')}
+            className={'goblin'}
+          >
+            {type === 'none' ? 'Goblin' : <h2 className='goblin'>Playing as: The Goblins</h2>}
+          </button>
+        ) : null}
+          
+        {type === 'none' || type === 'ent' ? (
+          <button
+            onClick={() => changeType('ent')}
+            className={'ent'}
+          >
+            {type === 'none' ? 'Ent' : <h2 className='ent'>Playing as: The Ents</h2>}
+          </button>
+        ) : null}
+          
+        {type === 'none' || type === 'dwarf' ? (
+          <button
+            onClick={() => changeType('dwarf')}
+            className={'dwarf'}
+          >
+            {type === 'none' ? 'Dwarf' : <h2 className='dwarf'>Playing as: The Dwarves</h2>}
+          </button>
+        ) : null}
 
-            <input
-              type="radio"
-              id="dwarf" 
-              value="dwarf" 
-              onChange={changeType}
-              checked={type === "dwarf"}/>
-            <label>Dwarf</label>
 
-            <input
-              type="radio"
-              id="ent" 
-              value="ent" 
-              onChange={changeType}
-              checked={type === "ent"}/>
-            <label>Ent</label>
-            
-            <input
-              type="radio"
-              id="transparent" 
-              value="transparent" 
-              onChange={changeType}
-              checked={type === "transparent"}/>
-            <label>None</label>
-        </fieldset>
+        </div>}
       </header>
       <div className="grid-container">
           {squareElements}
       </div>
-      <button onClick={handleToggle}>start</button>
+      {type === "tree" && <button onClick={handleToggle}>start</button>}
     </div>
   );
 }

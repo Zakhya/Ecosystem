@@ -57,3 +57,16 @@ header{
 .ip-text{
   offset-position: 20px;
 }
+
+.human{
+  background-color: #Dc9999;
+}
+.dwarf{
+  background-color: #7aaad6;
+}
+.ent{
+  background-color: #A7e48f;
+}
+.goblin{
+  background-color: #Dad68a;
+}
