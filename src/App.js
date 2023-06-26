@@ -7,11 +7,12 @@ import React from 'react'
 function App() {
   const [grid, setGrid] = React.useState(boxes)
   const [type, setType] = React.useState("tree")
-  const [takingTurns, setTakingTurns] = React.useState(false)
-  const [raceSelected, setRaceSelected] = React.useState('none')
-
-  const typeArray = ['human', 'goblin', 'dwarf', 'ent']
-  let playerRace = 'human'
+  const [typeArray, setTypeArray] = React.useState(['human', 'goblin', 'dwarf', 'ent'])
+  const [spotsLeft, setSpotsLeft] = React.useState(() => {
+    const idsArray = boxes.map((box) => box.id);
+  console.log(idsArray);
+  return idsArray;
+  })
 
   function startGame(id, columnId, rowId, race){
     if(race !== 'none' && race !== '') return
@@ -23,7 +24,7 @@ function App() {
             ...square,
             race: type,
           };
-        } else {
+        } else { 
           return square; // Keep the square unchanged
         }
       });
@@ -67,16 +68,23 @@ function App() {
         }
       });
     })
+    const filteredSpots = spotsLeft.filter(item => item !== id);
+    setSpotsLeft(filteredSpots);
     setType('none')
   }
 
+  React.useEffect(() => {
+    console.log(spotsLeft);
+  }, [spotsLeft]);
 
+  
   function toggle(id, columnId, rowId, race) {  
+    if(spotsLeft.length < 4) return
       console.log(id)
       console.log(columnId)
       console.log(rowId)
       console.log(race)
-
+      console.log(typeArray)
     if(race !== 'none' && race !== '') return
     setGrid(prevGrid => {
       const updatedGrid = prevGrid.map(square => {
@@ -133,20 +141,20 @@ function App() {
 
 
       })
-      let goblinTurnGrid
+      let player2TurnGrid
       for(let i = 0; i < 1; i++){
+        if(!spotsLeft.length) break 
         let unchanged = true
-        let rowNumber = Math.ceil(Math.random() * 20)
-        let columnNumber = Math.ceil(Math.random() * 20)
-        let id = columnNumber + ((rowNumber * 20) - 20)
+        let randomPosition = Math.floor(Math.random() * spotsLeft.length)
+        let id = spotsLeft[randomPosition]
         console.log("finding gob spot")
 
-        goblinTurnGrid = playerUpdatedGrid.map(square =>{
+        player2TurnGrid = playerUpdatedGrid.map(square =>{
           if (square.id === id && square.race === 'none') {
             unchanged = false
             return {
               ...square,
-              race: 'goblin',
+              race: typeArray[1],
             };
           } else {
             return square; // Keep the square unchanged
@@ -157,20 +165,20 @@ function App() {
         if(unchanged) i--
       }
 
-      let dwarfTurnGrid
+      let player3TurnGrid
       for(let i = 0; i < 1; i++){
+        if(!spotsLeft.length) break
         let unchanged = true
-        let rowNumber = Math.ceil(Math.random() * 20)
-        let columnNumber = Math.ceil(Math.random() * 20)
-        let id = columnNumber + ((rowNumber * 20) - 20)
+        let randomPosition = Math.floor(Math.random() * spotsLeft.length)
+        let id = spotsLeft[randomPosition]
         console.log("finding dwarf spot")
 
-        dwarfTurnGrid = goblinTurnGrid.map(square =>{
+        player3TurnGrid = player2TurnGrid.map(square =>{
           if (square.id === id && square.race === 'none') {
             unchanged = false
             return {
               ...square,
-              race: 'dwarf',
+              race: typeArray[2],
             };
           } else {
             return square; // Keep the square unchanged
@@ -181,20 +189,20 @@ function App() {
         if(unchanged) i--
       }
 
-      let entTurnGrid
+      let player4TurnGrid
       for(let i = 0; i < 1; i++){
+        if(!spotsLeft.length) break
         let unchanged = true
-        let rowNumber = Math.ceil(Math.random() * 20)
-        let columnNumber = Math.ceil(Math.random() * 20)
-        let id = columnNumber + ((rowNumber * 20) - 20)
+        let randomPosition = Math.floor(Math.random() * spotsLeft.length)
+        let id = spotsLeft[randomPosition]
         console.log("finding ent spot")
 
-        entTurnGrid = dwarfTurnGrid.map(square =>{
+        player4TurnGrid = player3TurnGrid.map(square =>{
           if (square.id === id && square.race === 'none') {
             unchanged = false
             return {
               ...square,
-              race: 'ent',
+              race: typeArray[3],
             };
           } else {
             return square; // Keep the square unchanged
@@ -204,7 +212,7 @@ function App() {
         console.log(id)
         if(unchanged) i--
       }
-      return entTurnGrid
+      return player4TurnGrid
     })
   }
 
@@ -447,14 +455,25 @@ function App() {
   }
   */
 
+  React.useEffect(() => {
+    setSpotsLeft(prevSpotsLeft => prevSpotsLeft.filter(id => grid.find(square => square.id === id).race === 'none'));
+  }, [grid]);
+
   function handleToggle(){
     let idList = []
-    for(let i = 0; i <= 90; i++){
-      let [id, columnNumber, rowNumber] = generateRandomIDs()
+    let id, columnNumber, rowNumber
+    let num = 1
+    while(num <= 100){
+      [id, columnNumber, rowNumber] = generateRandomIDs()
+      console.log(`ID:${id} Num:: ${num}`)
       if(!idList.includes(id)){
         startGame(id,columnNumber,rowNumber,'')
-      } else {
-        i--
+        setSpotsLeft(prevSpotsLeft => prevSpotsLeft.filter(id => grid.find(square => square.id === id).race === 'none'));
+        num++
+        idList.push(id)
+      }
+      else {
+        continue
       }
     }
     function generateRandomIDs(){
@@ -468,7 +487,12 @@ function App() {
   
   function changeType(type){
     setType(type)
-  console.log(type)
+    setTypeArray(prevTypeArray => {
+      let filteredArray = prevTypeArray.filter((el) => el !== type)
+      let returnArray = [type, ...filteredArray]
+      console.log(returnArray)
+      return returnArray 
+    })
 }
 
   return (
