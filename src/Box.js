@@ -25,5 +25,5 @@ export default function Box(props){
             onClick={props.toggle}
         >{(props.race !== 'none') && props.ip}
         </div>
-    )
-}
+        )
+    }

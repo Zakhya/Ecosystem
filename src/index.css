@@ -30,9 +30,9 @@ code {
   max-width: 520px; /* 25 columns * 100px */
   min-width: 520px; /* 25 columns * 100px */
   margin: 0 auto; /* Center horizontally */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  margin-top: 30px;
+  justify-content: start; /* Center horizontally */
+  align-items: start; /* Center vertically */
+  margin-top: 15px;
 }
 
 body {
@@ -69,4 +69,24 @@ header{
 }
 .goblin{
   background-color: #Dad68a;
+}
+
+footer{
+  display: flex;
+  justify-content: center;
+}
+
+.playButton{
+  margin-top: 70px;
+  width: 120px;
+  height: 45px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.totalIpContainer{
+  margin-top: 22.5px;
+  width: 450px;
+  display: flex;
+  justify-content: space-between;
 }

@@ -1,7 +1,7 @@
 import boxes from './boxes.js'
 import Box from './Box.js'
 import React from 'react'
-
+import FactionButtons from './FactionButtons.js'
 
 
 function App() {
@@ -13,6 +13,11 @@ function App() {
   console.log(idsArray);
   return idsArray;
   })
+
+  let goblinTotalIp = []
+  let humanTotalIp = []
+  let dwarfTotalIp = []
+  let entTotalIp = []
 
   function startGame(id, columnId, rowId, race){
     if(race !== 'none' && race !== '') return
@@ -73,18 +78,9 @@ function App() {
     setType('none')
   }
 
-  React.useEffect(() => {
-    console.log(spotsLeft);
-  }, [spotsLeft]);
-
   
   function toggle(id, columnId, rowId, race) {  
     if(spotsLeft.length < 4) return
-      console.log(id)
-      console.log(columnId)
-      console.log(rowId)
-      console.log(race)
-      console.log(typeArray)
     if(race !== 'none' && race !== '') return
     setGrid(prevGrid => {
       const updatedGrid = prevGrid.map(square => {
@@ -147,7 +143,6 @@ function App() {
         let unchanged = true
         let randomPosition = Math.floor(Math.random() * spotsLeft.length)
         let id = spotsLeft[randomPosition]
-        console.log("finding gob spot")
 
         player2TurnGrid = playerUpdatedGrid.map(square =>{
           if (square.id === id && square.race === 'none') {
@@ -161,7 +156,6 @@ function App() {
 
           }
         })
-        console.log(id)
         if(unchanged) i--
       }
 
@@ -171,7 +165,6 @@ function App() {
         let unchanged = true
         let randomPosition = Math.floor(Math.random() * spotsLeft.length)
         let id = spotsLeft[randomPosition]
-        console.log("finding dwarf spot")
 
         player3TurnGrid = player2TurnGrid.map(square =>{
           if (square.id === id && square.race === 'none') {
@@ -185,7 +178,6 @@ function App() {
 
           }
         })
-        console.log(id)
         if(unchanged) i--
       }
 
@@ -195,7 +187,6 @@ function App() {
         let unchanged = true
         let randomPosition = Math.floor(Math.random() * spotsLeft.length)
         let id = spotsLeft[randomPosition]
-        console.log("finding ent spot")
 
         player4TurnGrid = player3TurnGrid.map(square =>{
           if (square.id === id && square.race === 'none') {
@@ -209,7 +200,6 @@ function App() {
 
           }
         })
-        console.log(id)
         if(unchanged) i--
       }
       return player4TurnGrid
@@ -251,7 +241,7 @@ function App() {
       _treesInRange++
       ip++ 
     }
-    console.log(_treesInRange)
+    goblinTotalIp.push(ip)
     return ip
   }
 
@@ -295,6 +285,8 @@ function App() {
       _treesInRange++
       ip++ 
     }
+    humanTotalIp.push(ip)
+
       return ip
     }
 
@@ -335,6 +327,8 @@ function App() {
       _treesInRange++
       ip++ 
     }
+    dwarfTotalIp.push(ip)
+
     return ip
   }
 
@@ -377,6 +371,8 @@ function App() {
       _treesInRange++
       ip++ 
     }
+    entTotalIp.push(ip)
+
     return ip
   }
 
@@ -430,7 +426,7 @@ function App() {
       key={cell.id}
       id={cell.id}
       on={cell.on}
-      ip={cell.race === 'goblin' ? calcGoblinIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange) 
+      ip={cell.race === 'goblin' ? calcGoblinIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange)
       : cell.race === 'human' ? calcHumanIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange) 
       : cell.race === 'dwarf' ? calcDwarfIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange)
       : cell.race === 'ent' ? calcEntIp(cell.goblinsInRange, cell.humansInRange, cell.dwarvesInRange, cell.entsInRange, cell.treesInRange)
@@ -444,19 +440,16 @@ function App() {
       entsInRange={cell.entsInRange}
       treesInRange={cell.treesInRange}
       toggle={() => toggle(cell.id, cell.columnId, cell.rowId, cell.race)} />
-
   ))
-
-  /*
-  function changeType(event){
-    const {value} = event.target
-    console.log(event.target.value)
-    setType(value)
-  }
-  */
 
   React.useEffect(() => {
     setSpotsLeft(prevSpotsLeft => prevSpotsLeft.filter(id => grid.find(square => square.id === id).race === 'none'));
+    console.log(goblinTotalIp)
+    let totalGoblinIp = grid.map((box) => {
+      if (box.race === 'goblin'){
+        console.log(box)
+      } 
+    });
   }, [grid]);
 
   function handleToggle(){
@@ -465,7 +458,6 @@ function App() {
     let num = 1
     while(num <= 100){
       [id, columnNumber, rowNumber] = generateRandomIDs()
-      console.log(`ID:${id} Num:: ${num}`)
       if(!idList.includes(id)){
         startGame(id,columnNumber,rowNumber,'')
         setSpotsLeft(prevSpotsLeft => prevSpotsLeft.filter(id => grid.find(square => square.id === id).race === 'none'));
@@ -499,51 +491,26 @@ function App() {
     <div className="App">
       <header>
         <h2 className="title">Playing Field</h2>
-        {type !== "tree" && <div>
 
-        {type === 'none' || type === 'human' ? (
-          <button
-            onClick={() => changeType('human')}
-            className={'human'}
-          >
-            {type === 'none' ? 'Human' : <h2 className='human'>Playing as: The Humans</h2>}
-          </button>
-        ) : null}
+        {type !== 'tree' && 
+          <FactionButtons 
+            type={type}
+            changeType={changeType}/>}
 
-        {type === 'none' || type === 'goblin' ? (
-          <button
-            onClick={() => changeType('goblin')}
-            className={'goblin'}
-          >
-            {type === 'none' ? 'Goblin' : <h2 className='goblin'>Playing as: The Goblins</h2>}
-          </button>
-        ) : null}
-          
-        {type === 'none' || type === 'ent' ? (
-          <button
-            onClick={() => changeType('ent')}
-            className={'ent'}
-          >
-            {type === 'none' ? 'Ent' : <h2 className='ent'>Playing as: The Ents</h2>}
-          </button>
-        ) : null}
-          
-        {type === 'none' || type === 'dwarf' ? (
-          <button
-            onClick={() => changeType('dwarf')}
-            className={'dwarf'}
-          >
-            {type === 'none' ? 'Dwarf' : <h2 className='dwarf'>Playing as: The Dwarves</h2>}
-          </button>
-        ) : null}
-
-
-        </div>}
       </header>
+
       <div className="grid-container">
           {squareElements}
       </div>
-      {type === "tree" && <button onClick={handleToggle}>start</button>}
+      <footer>
+      {type === "tree" && <button className="playButton" onClick={handleToggle}>start</button>}
+      {type !== 'tree' && <div className="totalIpContainer">
+        {humanTotalIp.length === 0 ? <span>Human IP: 0</span> : (<span>{`Human IP: ${humanTotalIp.reduce((el, val) =>  val += el)}`}</span>)}
+        {goblinTotalIp.length === 0 ? <span>Goblin IP: 0</span> : (<span>{`Goblin IP: ${goblinTotalIp.reduce((el, val) =>  val += el)}`}</span>)}
+        {entTotalIp.length === 0 ? <span>Ent IP: 0</span> : (<span>{`Ent IP: ${entTotalIp.reduce((el, val) =>  val += el)}`}</span>)}
+        {dwarfTotalIp.length === 0 ? <span>Dwarf IP: 0</span> : (<span>{`Dwarf IP: ${dwarfTotalIp.reduce((el, val) =>  val += el)}`}</span>)}
+      </div>}
+      </footer>
     </div>
   );
 }
