@@ -4,13 +4,15 @@ import React from 'react'
 import FactionButtons from './FactionButtons.js'
 
 
+
 function App() {
+  const [hasRunToggle, setHasRunToggle] = React.useState(false)
+  const [globalIdList, setGlobalIdList] = React.useState([])
   const [grid, setGrid] = React.useState(boxes)
-  const [type, setType] = React.useState("tree")
+  const [type, setType] = React.useState('tree')
   const [typeArray, setTypeArray] = React.useState(['human', 'goblin', 'dwarf', 'ent'])
   const [spotsLeft, setSpotsLeft] = React.useState(() => {
     const idsArray = boxes.map((box) => box.id);
-  console.log(idsArray);
   return idsArray;
   })
 
@@ -66,7 +68,9 @@ function App() {
             humansInRange: (type === 'human' || race === 'human') ? square.humansInRange + 1 : square.humansInRange,
             dwarvesInRange: (type === 'dwarf' || race === 'dwarf') ? square.dwarvesInRange + 1 : square.dwarvesInRange,
             entsInRange: (type === 'ent' || race === 'ent') ? square.entsInRange + 1 : square.entsInRange,
-            treesInRange: (type === 'tree' || race === 'tree') ? square.treesInRange + 1 : square.treesInRange
+            treesInRange: (type === 'tree' || race === 'tree') ? square.treesInRange + 1 : square.treesInRange,
+            mineralsInRange: (type === 'mineral' || race === 'mineral') ? square.mineralsInRange + 1 : square.mineralsInRange,
+
           };
         } else {
           return square
@@ -75,7 +79,7 @@ function App() {
     })
     const filteredSpots = spotsLeft.filter(item => item !== id);
     setSpotsLeft(filteredSpots);
-    setType('none')
+    
   }
 
   
@@ -129,7 +133,9 @@ function App() {
             humansInRange: (type === 'human' || race === 'human') ? square.humansInRange + 1 : square.humansInRange,
             dwarvesInRange: (type === 'dwarf' || race === 'dwarf') ? square.dwarvesInRange + 1 : square.dwarvesInRange,
             entsInRange: (type === 'ent' || race === 'ent') ? square.entsInRange + 1 : square.entsInRange,
-            treesInRange: (type === 'tree' || race === 'tree') ? square.treesInRange + 1 : square.treesInRange
+            treesInRange: (type === 'tree' || race === 'tree') ? square.treesInRange + 1 : square.treesInRange,
+            mineralsInRange: (type === 'mineral' || race === 'mineral') ? square.mineralsInRange + 1 : square.mineralsInRange,
+            
           };
         } else {
           return square
@@ -442,32 +448,31 @@ function App() {
       toggle={() => toggle(cell.id, cell.columnId, cell.rowId, cell.race)} />
   ))
 
-  React.useEffect(() => {
-    setSpotsLeft(prevSpotsLeft => prevSpotsLeft.filter(id => grid.find(square => square.id === id).race === 'none'));
-    console.log(goblinTotalIp)
-    let totalGoblinIp = grid.map((box) => {
-      if (box.race === 'goblin'){
-        console.log(box)
-      } 
-    });
-  }, [grid]);
 
   function handleToggle(){
-    let idList = []
+    console.log("handleToggle")
+    let idList = globalIdList.length === 0 ? [] : globalIdList
     let id, columnNumber, rowNumber
     let num = 1
-    while(num <= 100){
+    while(num <= 75){
       [id, columnNumber, rowNumber] = generateRandomIDs()
       if(!idList.includes(id)){
+        idList.push(id)
         startGame(id,columnNumber,rowNumber,'')
         setSpotsLeft(prevSpotsLeft => prevSpotsLeft.filter(id => grid.find(square => square.id === id).race === 'none'));
         num++
-        idList.push(id)
       }
       else {
         continue
       }
     }
+    setGlobalIdList((prevList) => [idList, ...prevList])
+    if(hasRunToggle === false){
+      setHasRunToggle(true)
+    } else {
+      setType('none')
+    }
+
     function generateRandomIDs(){
       let rowNumber = Math.ceil(Math.random() * 20)
       let columnNumber = Math.ceil(Math.random() * 20)
@@ -475,7 +480,12 @@ function App() {
       return [id, columnNumber, rowNumber]
     }
   }
-  
+
+  React.useEffect(() => {
+    console.log('useEffect ran');
+    setType('mineral')
+    handleToggle()
+  },[hasRunToggle])
   
   function changeType(type){
     setType(type)
@@ -503,7 +513,7 @@ function App() {
           {squareElements}
       </div>
       <footer>
-      {type === "tree" && <button className="playButton" onClick={handleToggle}>start</button>}
+      { /* type === "tree" && <button className="playButton" onClick={handleToggle}>start</button> */}
       {type !== 'tree' && <div className="totalIpContainer">
         {humanTotalIp.length === 0 ? <span>Human IP: 0</span> : (<span>{`Human IP: ${humanTotalIp.reduce((el, val) =>  val += el)}`}</span>)}
         {goblinTotalIp.length === 0 ? <span>Goblin IP: 0</span> : (<span>{`Goblin IP: ${goblinTotalIp.reduce((el, val) =>  val += el)}`}</span>)}

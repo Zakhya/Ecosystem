@@ -90,3 +90,20 @@ footer{
   display: flex;
   justify-content: space-between;
 }
+.trees{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  height: 20px;
+  width: 20px;
+  border: 1px solid black;
+  display: inline-block;
+  margin-right: 4px;
+  border-radius: 5px;
+  margin-top: 4px;
+  text-align: center;
+}
+.tree{
+  margin-top: 2px;
+}

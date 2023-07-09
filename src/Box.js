@@ -1,4 +1,7 @@
 import React from 'react'
+import { FaTree } from 'react-icons/fa'
+import { GiMineralPearls } from 'react-icons/gi'
+
 
 export default function Box(props){
     let color = 'transparent'
@@ -12,6 +15,8 @@ export default function Box(props){
         color = '#A7e48f'
     } else if(props.race === 'tree'){
         color = '#174817'
+    } else if(props.race === 'mineral'){
+        color = '#4c4837'
     }
 
     const styles = {
@@ -21,9 +26,19 @@ export default function Box(props){
     return (
         <div
             style={styles}
-            className="box"
+            className={props.race === 'tree' ? 'trees' : 'box'}
             onClick={props.toggle}
-        >{(props.race !== 'none') && props.ip}
+        >{(props.race !== 'none') && (props.race !== 'tree') && props.race !== 'mineral' && props.ip}
+        {(props.race === 'tree') &&
+            <>
+                <FaTree className='tree'/>
+            </>
+        }
+        {(props.race === 'mineral') &&
+            <>
+                <GiMineralPearls className='tree'/>
+            </>
+        }
         </div>
         )
     }
