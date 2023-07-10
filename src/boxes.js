@@ -16,6 +16,7 @@ function fillArray() {
             entsInRange: 0,
             treesInRange: 0,
             mineralsInRange: 0,
+            waterInRange: 0,
             ip: 0
         })
         j > 19 ? j = 1 : j++

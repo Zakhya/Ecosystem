@@ -12,15 +12,6 @@ const FactionButtons = (props) => {
             {props.type === 'none' ? 'Human' : <h2 className='human'>Playing as: The Humans</h2>}
           </button>
         ) : null}
-
-        {props.type === 'none' || props.type === 'goblin' ? (
-          <button
-            onClick={() => props.changeType('goblin')}
-            className={'goblin'}
-          >
-            {props.type === 'none' ? 'Goblin' : <h2 className='goblin'>Playing as: The Goblins</h2>}
-          </button>
-        ) : null}
           
         {props.type === 'none' || props.type === 'ent' ? (
           <button
